@@ -1,0 +1,47 @@
+# rails + mariadb環境スターターパック
+# [password]は、各自で書き換えてください（引数または実行端末の環境変数渡しが理想的。。)
+# docker-composeコマンドは下記URLを参照のこと
+# https://qiita.com/wasanx25/items/d47caf37b79e855af95f#exec
+#
+# Write a.otsuka lastupdate:2019.12.12 
+#
+version: '3'
+services:
+  db:
+    image: mariadb
+    container_name: mariadb
+    environment:
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: QWERasdf1
+    ports:
+      - '3306:3306'
+    networks:
+      app_net:
+        ipv4_address: 172.20.0.3
+    volumes:
+      - ./mariadb_data:/var/lib/mysql
+  web:
+    image: autonomation/rails
+    container_name: rails 
+    volumes:
+      - ./rails_data:/var/www/myrails
+    environment:
+      - RBENV_ROOT=/usr/local/rbenv
+      - MARIADB_PASS=QWERasdf1
+      - PATH=${RBENV_ROOT}/bin:${RBENV_ROOT}/shims/:${PATH}
+    # command: rails s -p 3000 -b '0.0.0.0'
+    ports:
+      - "3000:3000"
+    networks:
+      app_net:
+        ipv4_address: 172.20.0.2
+    tty: true
+    depends_on:
+      - db
+networks:
+  app_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/24
