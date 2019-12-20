@@ -22,8 +22,7 @@
     - `git clone https://gitlab.sky.ft.nttcloud.net/CS_FALCON/rails6_starter-pack.git [dirname] && cd [dirname]`
 1. DockerFileをbuildします。ここではイメージ名称を「autonomation/rails」としてます。
     - `docker build -t autonomation/rails .`
-1. centos7イメージを取得したり関連パッケージを入れたりで10分強かかります。上手くビルドできたらコンテナを起動します(ここではコンテナの名前をrailsとして起動してます)。
-    - `docker run -i -d --name rails -v rails_data:/var/www/myrails autonomation/rails`
+
 + 課題：*イメージからのビルドは手間がかかるのでここまで作成したイメージをdockerHubに上げて取得する方式に変更要。*
 
 1. docker-cponmpse.ymlの編集。=> [password]を任意の文字列に変更（２箇所）
