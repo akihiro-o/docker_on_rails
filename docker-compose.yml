@@ -12,7 +12,7 @@ services:
     container_name: mariadb
     environment:
       MYSQL_USER: root
-      MYSQL_ROOT_PASSWORD: QWERasdf1
+      MYSQL_ROOT_PASSWORD: [password]
     ports:
       - '3306:3306'
     networks:
@@ -27,11 +27,12 @@ services:
       - ./rails_data:/var/www/myrails
     environment:
       - RBENV_ROOT=/usr/local/rbenv
-      - MARIADB_PASS=QWERasdf1
+      - MARIADB_PASS=[password]
       - PATH=${RBENV_ROOT}/bin:${RBENV_ROOT}/shims/:${PATH}
     # command: rails s -p 3000 -b '0.0.0.0'
     ports:
       - "3000:3000"
+      - "5000:5000"
     networks:
       app_net:
         ipv4_address: 172.20.0.2
