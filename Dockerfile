@@ -1,13 +1,24 @@
 FROM centos:7
 
 # set ruby version to be installed
-ENV ruby_ver="2.6.5"
-ENV rails_ver="6.0.1"
+ENV ruby_ver="2.7.0"
+ENV rails_ver="6.0.2"
 
 RUN yum -y update
 RUN yum -y install epel-release
 RUN yum -y install git make autoconf curl wget jq
 RUN yum -y install gcc-c++ glibc-headers openssl-devel readline libyaml-devel readline-devel zlib zlib-devel sqlite-devel bzip2 mariadb-client mariadb-devel
+
+# oracle-instantclient
+RUN  curl -o /etc/yum.repos.d/public-yum-ol7.repo https://yum.oracle.com/public-yum-ol7.repo && \
+     yum-config-manager --enable ol7_oracle_instantclient && \
+     yum -y install --nogpgcheck oracle-instantclient18.3-basic oracle-instantclient18.3-devel oracle-instantclient18.3-sqlplus && \
+     rm -rf /var/cache/yum && \
+     echo /usr/lib/oracle/18.3/client64/lib > /etc/ld.so.conf.d/oracle-instantclient18.3.conf && \
+     ldconfig
+RUN echo 'export LD_LIBRARY_PATH="/usr/lib/oracle/18.3/client64/lib"' >> ~/.bash_profile
+RUN echo 'export TNS_ADMIN="/usr/local/etc"' >> ~/.bash_profile
+RUN echo 'export NLS_LANG="Japanese_Japan.AL32UTF8"' >> ~/.bash_profile
 # mariadb
 RUN curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | bash
 RUN yum -y install  MariaDB-client MariaDB-shared
@@ -30,7 +41,7 @@ RUN echo 'eval "$(rbenv init --no-rehash -)"' >> /etc/profile.d/rbenv.sh
 # rubyとrailsをインストール
 # ADD rbenv.sh /etc/profile.d/rbenv.sh
 RUN source /etc/profile.d/rbenv.sh; rbenv install ${ruby_ver}; rbenv global ${ruby_ver}
-RUN source /etc/profile.d/rbenv.sh; gem update --system; gem install --version ${rails_ver} -N rails; gem install bundle
+RUN source /etc/profile.d/rbenv.sh; gem update --system; gem install --version ${rails_ver} -N rails; gem install bundle ruby-oci8
 
 RUN mkdir -p /var/www/myrails
 WORKDIR /var/www/myrails
