@@ -1,2 +1,4 @@
 rails_data/
 mariadb_data/
+oracle_data/
+.env
