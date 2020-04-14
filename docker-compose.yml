@@ -1,18 +1,20 @@
 # rails + mariadb環境スターターパック
-# [password]は、各自で書き換えてください（引数または実行端末の環境変数渡しが理想的。。)
+# 環境変数定義は同階層に外部ファイル.envを追加し下記の値を追加してください。
+# MARIADB_PASS=password_yourself
 # docker-composeコマンドは下記URLを参照のこと
 # https://qiita.com/wasanx25/items/d47caf37b79e855af95f#exec
 #
-# Write a.otsuka lastupdate:2019.12.12 
+# Write a.otsuka lastupdate:2020.04.14 
 #
 version: '3'
 services:
   mariadb:
     image: mariadb
     container_name: mariadb
+    env_file: .env
     environment:
       MYSQL_USER: root
-      MYSQL_ROOT_PASSWORD: [password]
+      MYSQL_ROOT_PASSWORD: ${MARIADB_PASS}
     ports:
       - '3306:3306'
     networks:
@@ -20,14 +22,35 @@ services:
         ipv4_address: 172.20.0.3
     volumes:
       - ./mariadb_data:/var/lib/mysql
+  oracle-xe:
+    image: epiclabs/docker-oracle-xe-11g
+    container_name: oracle
+    ports:
+      - '1521:1521'
+      - '5500:5500'
+    environment:
+      - TZ=Asia/Tokyo
+      - LANGUAGE=ja_JP.ja
+      - LANG=ja_JP.UTF-8
+      - NLS_LANG=Japanese_Japan.AL32UTF8
+      - ORACLE_ALLOW_REMOTE=true
+    networks:
+      app_net:
+        ipv4_address: 172.20.0.4
+    volumes:
+      - ./oracle_data:/u01/app/oracle
+    depends_on:
+      - mariadb
   web:
-    image: autonomation/rails
+    image: akihiro0028/autonomation-rails 
     container_name: rails 
+    env_file: .env
     volumes:
       - ./rails_data:/var/www/myrails
     environment:
-      - RBENV_ROOT=/usr/local/rbenv
-      - MARIADB_PASS=[password]
+      - RBENV_ROOT=${RBENV_ROOT}
+      - MARIADB_PASS=${MARIADB_PASS}
+      - NLS_LANG=japanese_japan.al32utf8
       - PATH=${RBENV_ROOT}/bin:${RBENV_ROOT}/shims/:${PATH}
     # command: rails s -p 3000 -b '0.0.0.0'
     ports:
@@ -38,7 +61,8 @@ services:
         ipv4_address: 172.20.0.2
     tty: true
     depends_on:
-      - db
+      - mariadb
+      - oracle-xe
 networks:
   app_net:
     driver: bridge
