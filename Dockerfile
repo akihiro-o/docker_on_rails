@@ -1,7 +1,7 @@
 FROM centos:7
 
 # set ruby version to be installed
-ENV ruby_ver="2.7.0"
+ENV ruby_ver="2.6.5"
 ENV rails_ver="6.0.2"
 
 RUN yum -y update
@@ -37,11 +37,12 @@ RUN git clone https://github.com/sstephenson/ruby-build.git /usr/local/rbenv/plu
 # コマンドでrbenvが使えるように設定
 RUN echo 'export RBENV_ROOT="/usr/local/rbenv"' >> /etc/profile.d/rbenv.sh
 RUN echo 'export PATH="${RBENV_ROOT}/bin:${PATH}"' >> /etc/profile.d/rbenv.sh
+RUN echo 'export PATH="${RBENV_ROOT}/versions/${ruby_ver}/bin:${PATH}"' >> /etc/profile.d/rbenv.sh
 RUN echo 'eval "$(rbenv init --no-rehash -)"' >> /etc/profile.d/rbenv.sh
 # rubyとrailsをインストール
 # ADD rbenv.sh /etc/profile.d/rbenv.sh
 RUN source /etc/profile.d/rbenv.sh; rbenv install ${ruby_ver}; rbenv global ${ruby_ver}
-RUN source /etc/profile.d/rbenv.sh; gem update --system; gem install --version ${rails_ver} -N rails; gem install bundle ruby-oci8
+RUN source /etc/profile.d/rbenv.sh; gem update --system; gem install --version ${rails_ver} -N rails; gem install bundle -N ruby-oci8
 
 RUN mkdir -p /var/www/myrails
 WORKDIR /var/www/myrails

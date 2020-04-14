@@ -1,9 +1,10 @@
 # rails + mariadb環境スターターパック
-# [password]は、各自で書き換えてください（引数または実行端末の環境変数渡しが理想的。。)
+# 環境変数定義は同階層に外部ファイル.envを追加し下記の値を追加してください。
+# MARIADB_PASS=password_yourself
 # docker-composeコマンドは下記URLを参照のこと
 # https://qiita.com/wasanx25/items/d47caf37b79e855af95f#exec
 #
-# Write a.otsuka lastupdate:2019.12.12 
+# Write a.otsuka lastupdate:2020.04.14 
 #
 version: '3'
 services:
@@ -47,6 +48,7 @@ services:
     volumes:
       - ./rails_data:/var/www/myrails
     environment:
+      - RBENV_ROOT=${RBENV_ROOT}
       - MARIADB_PASS=${MARIADB_PASS}
       - NLS_LANG=japanese_japan.al32utf8
       - PATH=${RBENV_ROOT}/bin:${RBENV_ROOT}/shims/:${PATH}
