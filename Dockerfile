@@ -35,9 +35,10 @@ RUN git clone https://github.com/sstephenson/rbenv.git /usr/local/rbenv
 RUN git clone https://github.com/sstephenson/ruby-build.git /usr/local/rbenv/plugins/ruby-build
 
 # コマンドでrbenvが使えるように設定
+RUN echo "export RUBY_VER=${ruby_ver}">>/etc/profile.d/rbenv.sh
 RUN echo 'export RBENV_ROOT="/usr/local/rbenv"' >> /etc/profile.d/rbenv.sh
 RUN echo 'export PATH="${RBENV_ROOT}/bin:${PATH}"' >> /etc/profile.d/rbenv.sh
-RUN echo 'export PATH="${RBENV_ROOT}/versions/${ruby_ver}/bin:${PATH}"' >> /etc/profile.d/rbenv.sh
+RUN echo 'export PATH="${RBENV_ROOT}/versions/${RUBY_VER}/bin:${PATH}"' >> /etc/profile.d/rbenv.sh
 RUN echo 'eval "$(rbenv init --no-rehash -)"' >> /etc/profile.d/rbenv.sh
 # rubyとrailsをインストール
 # ADD rbenv.sh /etc/profile.d/rbenv.sh
