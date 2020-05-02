@@ -55,6 +55,7 @@ services:
     # command: rails s -p 3000 -b '0.0.0.0'
     ports:
       - "3000:3000"
+      - "3035:3035"
       - "5000:5000"
     networks:
       app_net:

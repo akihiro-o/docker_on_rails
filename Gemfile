@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
-gem 'rails', '6.0.1'
-gem 'bundler','1.17.3'
+gem 'rails', '6.0.2'
+gem 'bundler'
 gem 'bootsnap'
 gem 'puma'
 gem 'mysql2'
@@ -11,6 +11,10 @@ gem 'sass-rails'
 gem 'jbuilder'
 gem 'spring'
 gem 'spring-watcher-listen'
+gem 'html2slim'
+gem 'kaminari'
+gem 'settingslogic'
+gem 'paranoia'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -26,11 +30,13 @@ group :development, :test do
   gem 'rubocop'
   gem 'factory_bot_rails'
   gem 'launchy'
+  gem 'brakeman'
 end
 
 group :development do
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
   gem 'web-console'
+  gem 'database_rewinder'
 end
 
 group :test do
