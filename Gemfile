@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
-gem 'rails', '6.0.2'
+gem 'rails', '6.0.2.2'
 gem 'bundler'
-gem 'bootsnap'
+gem 'bootsnap', require: false
 gem 'puma'
 gem 'mysql2'
 gem 'webpacker'
@@ -9,34 +9,29 @@ gem 'slim-rails'
 gem 'listen', '>= 3.0.5', '< 3.2'
 gem 'sass-rails'
 gem 'jbuilder'
-gem 'spring'
-gem 'spring-watcher-listen'
+gem 'rubyXL'
+gem 'graphql'
+gem 'devise'
 gem 'html2slim'
 gem 'kaminari'
 gem 'settingslogic'
 gem 'paranoia'
+gem 'html5_validators'
+gem 'sidekiq'
 
 group :development, :test do
-  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'graphiql-rails'
   gem 'pry'
   gem 'pry-rails'
-  gem 'pry-doc'
-  gem 'pry-stack_explorer'
-  gem 'pry-byebug'
-  gem 'ruby-debug-ide'
-  gem 'debase'
-  gem 'foreman'
+  gem 'spring'
+  gem 'spring-watcher-listen'
+  gem 'spring-commands-rspec'
   gem 'rubocop'
   gem 'factory_bot_rails'
-  gem 'launchy'
+  gem 'rubocop'
   gem 'brakeman'
-end
-
-group :development do
-  # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
-  gem 'web-console'
-  gem 'database_rewinder'
+  gem 'foreman'
+  gem 'json-schema'
 end
 
 group :test do
@@ -44,15 +39,10 @@ group :test do
   gem 'timecop'
   gem 'rails-controller-testing'
   gem 'database_rewinder'
+  gem 'timecop'
   gem 'capybara'
   gem 'selenium-webdriver'
   gem 'turnip'
-  gem 'shoulda-matchers'
-  gem 'chromedriver-helper'
-  gem 'rubocop-rspec'
-  gem 'json-schema'
-  gem 'timecop'
-  # swagger
-  # gem 'webmock'
-  gem 'rack-json_schema'
 end
+
+gem 'graphiql-rails', group: :development
