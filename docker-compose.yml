@@ -48,7 +48,7 @@ services:
       - ./oracle_data:/u01/app/oracle
     depends_on:
       - mariadb
-  web:
+  web: &base
     image: akihiro0028/autonomation-rails 
     container_name: rails 
     env_file: .env
@@ -95,6 +95,17 @@ services:
     networks:
       app_net:
         ipv4_address: 172.20.0.6
+
+  sidekiq:
+    <<: *base
+    container_name: sidekiq
+    working_dir: ${WORKING_DIR}
+    command: bundle exec sidekiq -C config/sidekiq.yml
+    ports:
+      - "10001:10001"
+    networks:
+      app_net:
+        ipv4_address: 172.20.0.7
 
 networks:
   app_net:

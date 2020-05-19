@@ -18,6 +18,8 @@ gem 'settingslogic'
 gem 'paranoia'
 gem 'html5_validators'
 gem 'sidekiq'
+gem 'redis-namespace'
+gem 'active_storage_validations'
 
 group :development, :test do
   gem 'graphiql-rails'

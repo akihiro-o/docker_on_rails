@@ -50,9 +50,7 @@ RUN mkdir -p /var/www/myrails
 WORKDIR /var/www/myrails
 ADD Gemfile /var/www/myrails/Gemfile
 RUN touch /var/www/myrails/Gemfile.lock
-#RUN source /etc/profile.d/rbenv.sh;  bundle install
-#RUN cat /var/www/myrails/Gemfile
-#ADD Gemfile /var/www/myrails/Gemfile
+RUN source /etc/profile.d/rbenv.sh;  bundle install
 ## railsプロジェクトを同名称で作成
 #RUN source /etc/profile.d/rbenv.sh; rails new . -B --database=mysql --skip-turbolinks --skip-test --skip-bundle --path vendor/bundle
 ## webpacker install
