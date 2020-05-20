@@ -2,5 +2,6 @@ rails_data/
 mariadb_data/
 oracle_data/
 redis_data/
+.docker-sync/
 .env
 *.DS_Store

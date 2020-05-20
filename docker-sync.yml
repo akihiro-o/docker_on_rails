@@ -1,0 +1,7 @@
+version: '2'
+options:
+  compose-dev-file-path: 'docker-compose-dev.yml'
+syncs:
+  sync-rails:
+    src: './rails_data/'  
+    sync_strategy: 'unison'

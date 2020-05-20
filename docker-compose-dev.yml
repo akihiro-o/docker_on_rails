@@ -1,0 +1,14 @@
+version: '3'
+
+
+volumes:
+  sync-rails:
+    external: true
+
+services:
+  rails:
+    volumes:
+      - sync-rails:/var/www/myrails/:nocopy
+  sidekiq:
+    volumes:
+      - sync-rails:/var/www/myrails/:nocopy

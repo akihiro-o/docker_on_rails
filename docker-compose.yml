@@ -3,18 +3,29 @@
 # syntax
 # - echo "RBENV_ROOT=/usr/local/rbenv">>.env
 # - echo "MARIADB_PASS={{password_yourself}}">>.env
-# - echo "WORKING_DIR={{your_working_dir}}">>.env
+# - echo "WORKING_DIR=/var/www/myrails/{your_project}">>.env
 #
 # docker-composeコマンドは下記URLを参照のこと
 # https://qiita.com/wasanx25/items/d47caf37b79e855af95f#exec
+#
+# docker-sync関連はこの記事を参考に構築
+# https://qiita.com/Satoshi_Numasawa/items/278a143aa41735e1b0da
+#
 # memo:
 # - ITの為にselemiumを追加したが現在動作未検証。
-# - ActiveJob+Sidekiqでbackground-prosessを実行する為にkeyvaluedb:radisを追加。
-# - selenium_chrome, redis, sidekiqをコメントアウト
-# Write a.otsuka lastupdate:2020.05.22
+# - 2020.5.17 ActiveJob+Sidekiqでbackground-prosessを実行する為にkeyvaluedb:radisを追加。
+# - 2020.5.19 sidekiqを別コンテナに切り出し、docker-sync利用で母艦ファイルの読み込み速度の向上を図る。
+# - 2020.5.20 上述のdocker-syncでの母艦ディスクマウントを行う為にdocker-compose-dev.ymlを追加。
+#   -> docker-sync.ymlがマウント設定を記載するファイルとなる。
+# - 2021.1.04 master側でのコンテナ設定変更内容を、developにrebaseして動作確認。
+# 注意事項
+# - docker-syncを利用する構成を適用する場合、docker以外に母艦側アプリが必要となる。
+#   -> 文書が長くなるので詳細はReadme.mdを参照。
+# - railsのgemをvolume共有するためにbundle installコマンドは--pathオプションでvendor/bundle以下に保存要。
+#
+# Write a.otsuka lastupdate:2021.01.04
 ###
-
-version: '3'
+version: "3"
 services:
   mariadb:
     image: mariadb:10.4
@@ -24,39 +35,17 @@ services:
       MYSQL_USER: root
       MYSQL_ROOT_PASSWORD: ${MARIADB_PASS}
     ports:
-      - '3306:3306'
+      - "3306:3306"
     networks:
       app_net:
         ipv4_address: 172.20.0.3
     volumes:
       - ./mariadb_data:/var/lib/mysql
-  oracle-xe:
-    image: epiclabs/docker-oracle-xe-11g
-    container_name: oracle
-    ports:
-      - '1521:1521'
-      - '5500:5500'
-    environment:
-      - TZ=Asia/Tokyo
-      - LANGUAGE=ja_JP.ja
-      - LANG=ja_JP.UTF-8
-      - NLS_LANG=Japanese_Japan.AL32UTF8
-      - ORACLE_ALLOW_REMOTE=true
-    networks:
-      app_net:
-        ipv4_address: 172.20.0.4
-    volumes:
-      - ./oracle_data:/u01/app/oracle
-    depends_on:
-      - mariadb
-  web: &base
-    #image: akihiro0028/autonomation-rails:version-0.7.1
-    image: akihiro0028/autonomation-rails:version-0.8
-    container_name: rails 
+
+  # Rails開発用の基底コンテナ->web開発用コンテナやsidekiqコンテナはこのbaseコンテナを継承。
+  base: &base
+    image: akihiro0028/autonomation-rails:version-v0.8
     env_file: .env
-    volumes:
-      - ./rails_data:/var/www/myrails
-    working_dir: ${WORKING_DIR}
     environment:
       - RBENV_ROOT=${RBENV_ROOT}
       - MARIADB_PASS=${MARIADB_PASS}
@@ -66,7 +55,11 @@ services:
       - REDIS_URL=redis://172.20.0.6:6379
       - GMAIL_ACCOUNT=${GMAIL_ACCOUNT}
       - GMAIL_PASSWORD=${GMAIL_PASSWORD}
-    # command: rails s -p 3000 -b '0.0.0.0'
+
+  # web開発用のrailsコンテナ
+  rails: &rails
+    <<: *base
+    container_name: rails
     ports:
       - "3000:3000"
       - "3035:3035"
@@ -78,6 +71,7 @@ services:
     depends_on:
       - mariadb
 
+  # integration test用のseleniumコンテナ
   selenium:
     image: selenium/standalone-chrome-debug
     container_name: selenium
@@ -86,11 +80,13 @@ services:
     ports:
       - "4444:4444"
       - "5900:5900"
+    depends_on:
+      - rails
     networks:
       app_net:
         ipv4_address: 172.20.0.5
 
-  # redis,要否判定の上適宜コメントアウト 
+  # redis,要否判定の上適宜コメントアウト
   redis:
     image: "redis:latest"
     container_name: redis
@@ -102,7 +98,7 @@ services:
       app_net:
         ipv4_address: 172.20.0.6
 
-  # sidekiq,要否判定の上適宜コメントアウト 
+  # sidekiq,要否判定の上、適宜コメントアウト
   sidekiq:
     <<: *base
     container_name: sidekiq
@@ -117,7 +113,26 @@ services:
       app_net:
         ipv4_address: 172.20.0.7
 
+  # oracle開発用コンテナ。要否判定の上、適宜コメントアウト
+  oracle-xe:
+    image: epiclabs/docker-oracle-xe-11g
+    container_name: oracle
+    ports:
+      - "1521:1521"
+      - "5500:5500"
+    environment:
+      - TZ=Asia/Tokyo
+      - LANGUAGE=ja_JP.ja
+      - LANG=ja_JP.UTF-8
+      - NLS_LANG=Japanese_Japan.AL32UTF8
+      - ORACLE_ALLOW_REMOTE=true
+    networks:
+      app_net:
+        ipv4_address: 172.20.0.4
+    volumes:
+      - ./oracle_data:/u01/app/oracle
 
+# network設定セクション。
 networks:
   app_net:
     driver: bridge
@@ -125,3 +140,4 @@ networks:
       driver: default
       config:
         - subnet: 172.20.0.0/24
+
