@@ -1,5 +1,6 @@
 # rails + mariadb環境スターターパック
 # 環境変数定義は同階層に外部ファイル.envを追加し下記の値を追加してください。
+#
 # syntax
 # - echo "RBENV_ROOT=/usr/local/rbenv">>.env
 # - echo "MARIADB_PASS={{password_yourself}}">>.env
@@ -25,6 +26,7 @@
 # - railsのgemをvolume共有するためにbundle installコマンドは--pathオプションでvendor/bundle以下に保存要。
 #
 # Write a.otsuka lastupdate:2021.01.04
+
 ###
 
 version: "3"
@@ -48,6 +50,7 @@ services:
   # Rails開発用の基底コンテナ->web開発用コンテナやsidekiqコンテナはこのbaseコンテナを継承。
   base: &base
     image: akihiro0028/autonomation-rails:version-0.8
+
     env_file: .env
     environment:
       - RBENV_ROOT=${RBENV_ROOT}
@@ -68,13 +71,9 @@ services:
       - "3000:3000"
       - "3035:3035"
       - "4000:4000"
-    networks:
-      app_net:
-        ipv4_address: 172.21.0.2
-    tty: true
-    depends_on:
-      - mariadb
-    working_dir: ${WORKING_DIR}
+      - REDIS_URL=redis://172.20.0.6:6379
+    #volumes:
+    #  - ./rails_data:/var/www
 
   # integration test用のseleniumコンテナ
   selenium:
