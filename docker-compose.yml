@@ -9,8 +9,8 @@
 # memo:
 # - ITの為にselemiumを追加したが現在動作未検証。
 # - ActiveJob+Sidekiqでbackground-prosessを実行する為にkeyvaluedb:radisを追加。
-
-# Write a.otsuka lastupdate:2020.05.17 
+# - selenium_chrome, redis, sidekiqをコメントアウト
+# Write a.otsuka lastupdate:2020.05.22
 ###
 
 version: '3'
@@ -74,38 +74,38 @@ services:
       - mariadb
       - oracle-xe
 
-  selenium_chrome:
-    image: selenium/standalone-chrome-debug
-    container_name: selenium
-    logging:
-      driver: none
-    ports:
-      - "4444:4444"
-    networks:
-      app_net:
-        ipv4_address: 172.20.0.5
+#  selenium_chrome:
+#    image: selenium/standalone-chrome-debug
+#    container_name: selenium
+#    logging:
+#      driver: none
+#    ports:
+#      - "4444:4444"
+#    networks:
+#      app_net:
+#        ipv4_address: 172.20.0.5
 
-  redis:
-    image: "redis:latest"
-    container_name: redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - ./redis_data:/data
-    networks:
-      app_net:
-        ipv4_address: 172.20.0.6
+#  redis:
+#    image: "redis:latest"
+#    container_name: redis
+#    ports:
+#      - "6379:6379"
+#    volumes:
+#      - ./redis_data:/data
+#    networks:
+#      app_net:
+#        ipv4_address: 172.20.0.6
 
-  sidekiq:
-    <<: *base
-    container_name: sidekiq
-    working_dir: ${WORKING_DIR}
-    command: bundle exec sidekiq -C config/sidekiq.yml
-    ports:
-      - "10001:10001"
-    networks:
-      app_net:
-        ipv4_address: 172.20.0.7
+#  sidekiq:
+#    <<: *base
+#    container_name: sidekiq
+#    working_dir: ${WORKING_DIR}
+#    command: bundle exec sidekiq -C config/sidekiq.yml
+#    ports:
+#      - "10001:10001"
+#    networks:
+#      app_net:
+#        ipv4_address: 172.20.0.7
 
 networks:
   app_net:

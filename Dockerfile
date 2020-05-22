@@ -45,6 +45,7 @@ RUN echo 'eval "$(rbenv init --no-rehash -)"' >> /etc/profile.d/rbenv.sh
 # ADD rbenv.sh /etc/profile.d/rbenv.sh
 RUN source /etc/profile.d/rbenv.sh; rbenv install ${ruby_ver}; rbenv global ${ruby_ver}
 RUN source /etc/profile.d/rbenv.sh; gem update --system; gem install --version ${rails_ver} -N rails; gem install bundle -N ruby-oci8
+RUN source /etc/profile.d/rbenv.sh; gem install sidekiq -N
 
 RUN mkdir -p /var/www/myrails
 WORKDIR /var/www/myrails
