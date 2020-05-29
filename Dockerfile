@@ -54,9 +54,10 @@ RUN touch /var/www/myrails/Gemfile.lock
 RUN source /etc/profile.d/rbenv.sh;  bundle install
 
 # overwrite /etc/syslog.conf,/etc/rsyslog.d/listen.conf
-RUN echo '$ModLoad imuxsock' > /etc/rsyslog.conf
-RUN echo '$OmitLocalLogging off' >> /etc/rsyslog.conf
-RUN echo '' > /etc/rsyslog.d/listen.conf
+RUN sed -i -e '/$ModLoad imjournal/s/^/#/' /etc/rsyslog.conf
+RUN sed -i -e 's/$OmitLocalLogging on/$OmitLocalLogging off/' /etc/rsyslog.conf
+RUN sed -i -e '/$IMJournalStateFile/s/^/#/' /etc/rsyslog.conf
+RUN sed -i -e '/$SystemLogSocketName/s/^/#/' /etc/rsyslog.d/listen.conf
 
 ## railsプロジェクトを同名称で作成
 #RUN source /etc/profile.d/rbenv.sh; rails new . -B --database=mysql --skip-turbolinks --skip-test --skip-bundle --path vendor/bundle
