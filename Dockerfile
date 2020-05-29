@@ -6,7 +6,7 @@ ENV rails_ver="6.0.2"
 
 RUN yum -y update
 RUN yum -y install epel-release
-RUN yum -y install git make autoconf curl wget jq
+RUN yum -y install git make autoconf curl wget jq rsyslog
 RUN yum -y install gcc-c++ glibc-headers openssl-devel readline libyaml-devel readline-devel zlib zlib-devel sqlite-devel bzip2 mariadb-client mariadb-devel
 
 # oracle-instantclient
@@ -52,6 +52,12 @@ WORKDIR /var/www/myrails
 ADD Gemfile /var/www/myrails/Gemfile
 RUN touch /var/www/myrails/Gemfile.lock
 RUN source /etc/profile.d/rbenv.sh;  bundle install
+
+# overwrite /etc/syslog.conf,/etc/rsyslog.d/listen.conf
+RUN echo '$ModLoad imuxsock' > /etc/rsyslog.conf
+RUN echo '$OmitLocalLogging off' >> /etc/rsyslog.conf
+RUN echo '' > /etc/rsyslog.d/listen.conf
+
 ## railsプロジェクトを同名称で作成
 #RUN source /etc/profile.d/rbenv.sh; rails new . -B --database=mysql --skip-turbolinks --skip-test --skip-bundle --path vendor/bundle
 ## webpacker install
