@@ -3,6 +3,7 @@
 # syntax
 # - echo "RBENV_ROOT=/usr/local/rbenv">>.env
 # - echo "MARIADB_PASS={{password_yourself}}">>.env
+# - echo "WORKING_DIR={{your_working_dir}}">>.env
 #
 # docker-composeコマンドは下記URLを参照のこと
 # https://qiita.com/wasanx25/items/d47caf37b79e855af95f#exec
@@ -16,7 +17,7 @@
 version: '3'
 services:
   mariadb:
-    image: mariadb
+    image: mariadb:10.4
     container_name: mariadb
     env_file: .env
     environment:
@@ -49,7 +50,7 @@ services:
     depends_on:
       - mariadb
   web: &base
-    image: akihiro0028/autonomation-rails 
+    image: akihiro0028/autonomation-rails:version-0.7.1
     container_name: rails 
     env_file: .env
     volumes:
@@ -66,7 +67,6 @@ services:
     ports:
       - "3000:3000"
       - "3035:3035"
-      # - "5000:5000"
     networks:
       app_net:
         ipv4_address: 172.20.0.2
@@ -85,6 +85,7 @@ services:
       app_net:
         ipv4_address: 172.20.0.5
 
+  # redis,要否判定の上適宜コメントアウト 
   redis:
     image: "redis:latest"
     container_name: redis
@@ -96,11 +97,12 @@ services:
       app_net:
         ipv4_address: 172.20.0.6
 
+  # sidekiq,要否判定の上適宜コメントアウト 
   sidekiq:
     <<: *base
     container_name: sidekiq
     working_dir: ${WORKING_DIR}
-    command: rsyslogd && bundle exec sidekiq 2>&1 | logger -t sidekiq
+    # command: rsyslogd && bundle exec sidekiq 2>&1 | logger -t sidekiq
     ports:
       - "10001:10001"
     depends_on:
