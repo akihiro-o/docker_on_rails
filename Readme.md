@@ -7,12 +7,13 @@ docker-composeでRails6プロジェクトを作ってみた ^ ^
 - 2019/12/20 一部手順を修正。
 - 2020/04/03 コンテナにOracle-instantcliantを追加し、ruby-oci8でのdbコネクションを実現
 - 2020/06/02 docker-compose.ymlでmariadbのtagを10.4に指定。
+- 2020/10/12 Rubyバージョンを2.7.2に,rails versionを6.0.3に変更。gem tiny_tdsをネイティブインストール
 
 
 ## MW構成
 
-- ruby 2.6.5
-- Rails 6.0.2
+- ruby 2.7.2
+- Rails 6.0.3
 - MariaDB-1:10.4(lastest)
 - nodejs v10.17.0
 - Oracle instantcliant 18.3

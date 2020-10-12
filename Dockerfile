@@ -1,13 +1,14 @@
 FROM centos:7
 
 # set ruby version to be installed
-ENV ruby_ver="2.6.5"
-ENV rails_ver="6.0.2"
+ENV ruby_ver="2.7.2"
+ENV rails_ver="6.0.3"
 
 RUN yum -y update
 RUN yum -y install epel-release
 RUN yum -y install git make autoconf curl wget jq rsyslog
 RUN yum -y install gcc-c++ glibc-headers openssl-devel readline libyaml-devel readline-devel zlib zlib-devel sqlite-devel bzip2 mariadb-client mariadb-devel
+RUN yum -y install freetds freetds-devel
 
 # oracle-instantclient
 RUN  curl -o /etc/yum.repos.d/public-yum-ol7.repo https://yum.oracle.com/public-yum-ol7.repo && \
@@ -46,6 +47,7 @@ RUN echo 'eval "$(rbenv init --no-rehash -)"' >> /etc/profile.d/rbenv.sh
 RUN source /etc/profile.d/rbenv.sh; rbenv install ${ruby_ver}; rbenv global ${ruby_ver}
 RUN source /etc/profile.d/rbenv.sh; gem update --system; gem install --version ${rails_ver} -N rails; gem install bundle -N ruby-oci8
 RUN source /etc/profile.d/rbenv.sh; gem install sidekiq -N
+RUN source /etc/profile.d/rbenv.sh; gem install tiny_tds -N
 
 RUN mkdir -p /var/www/myrails
 WORKDIR /var/www/myrails
