@@ -28,7 +28,6 @@ group :development, :test do
   gem 'spring'
   gem 'spring-watcher-listen'
   gem 'spring-commands-rspec'
-  gem 'rubocop'
   gem 'factory_bot_rails'
   gem 'rubocop'
   gem 'brakeman'
@@ -38,7 +37,6 @@ end
 
 group :test do
   gem 'rspec-rails'
-  gem 'timecop'
   gem 'rails-controller-testing'
   gem 'database_rewinder'
   gem 'timecop'
@@ -47,4 +45,3 @@ group :test do
   gem 'turnip'
 end
 
-gem 'graphiql-rails', group: :development
