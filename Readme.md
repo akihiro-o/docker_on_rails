@@ -10,6 +10,8 @@ docker-composeでRails6プロジェクトを作ってみた ^ ^
 - 2020/05/20 `docker for mac`でvolume同期が遅い問題への対処:developブランチにdocker-sync設定を追加。
 - 2020/06/02 docker-compose.ymlでmariadbのtagを10.4に指定。
 - 2020/10/12 Rubyバージョンを2.7.2に,rails versionを6.0.3に変更。gem tiny_tdsをネイティブインストール
+- 2021/01/04 master側でのコンテナ設定変更内容を、developにrebaseして動作確認。
+  - network払い出しIP帯を172.21.0.0/24に変更。
 
 
 ## MW構成
@@ -42,6 +44,7 @@ oracleコンテナーへの接続方法
 - 以下、docker-syncを動作させる為に自宅Macに追加したネイティブアプリ。
 
 ```bash
+# python3必須
 sudo pip3 install --upgrade pip
 pip3 install setuptools
 gem install docker-sync
@@ -72,3 +75,8 @@ docker-sync stop
     ```
   - 非同期処理用に作成したsidekiqコンテナはrailsコンテナと同じディレクトリをマウント。
   - oracle,sidekiqコンテナ等が不要な場合は下記のコマンドで個別に起動ができる。
+
+    ```bash
+    # rails開発コンテナとmariadbのみ起動する場合。
+    docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d rails
+    ```

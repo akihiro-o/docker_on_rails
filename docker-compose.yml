@@ -18,6 +18,7 @@
 # - 2020.5.20 上述のdocker-syncでの母艦ディスクマウントを行う為にdocker-compose-dev.ymlを追加。
 #   -> docker-sync.ymlがマウント設定を記載するファイルとなる。
 # - 2021.1.04 master側でのコンテナ設定変更内容を、developにrebaseして動作確認。
+#   -> network設定でエラーが出た為、network払い出しIP帯を172.21.0.0/24に変更。
 # 注意事項
 # - docker-syncを利用する構成を適用する場合、docker以外に母艦側アプリが必要となる。
 #   -> 文書が長くなるので詳細はReadme.mdを参照。
@@ -25,7 +26,9 @@
 #
 # Write a.otsuka lastupdate:2021.01.04
 ###
+
 version: "3"
+
 services:
   mariadb:
     image: mariadb:10.4
@@ -38,13 +41,13 @@ services:
       - "3306:3306"
     networks:
       app_net:
-        ipv4_address: 172.20.0.3
+        ipv4_address: 172.21.0.3
     volumes:
       - ./mariadb_data:/var/lib/mysql
 
   # Rails開発用の基底コンテナ->web開発用コンテナやsidekiqコンテナはこのbaseコンテナを継承。
   base: &base
-    image: akihiro0028/autonomation-rails:version-v0.8
+    image: akihiro0028/autonomation-rails:version-0.8
     env_file: .env
     environment:
       - RBENV_ROOT=${RBENV_ROOT}
@@ -52,7 +55,7 @@ services:
       - NLS_LANG=japanese_japan.al32utf8
       - PATH=${RBENV_ROOT}/bin:${RBENV_ROOT}/shims/:${PATH}
       - SELENIUM_DRIVER_URL=http://172.20.0.5:4444/wd/hub
-      - REDIS_URL=redis://172.20.0.6:6379
+      - REDIS_URL=redis://172.21.0.6:6379
       - GMAIL_ACCOUNT=${GMAIL_ACCOUNT}
       - GMAIL_PASSWORD=${GMAIL_PASSWORD}
 
@@ -60,16 +63,18 @@ services:
   rails: &rails
     <<: *base
     container_name: rails
+    env_file: .env
     ports:
       - "3000:3000"
       - "3035:3035"
       - "4000:4000"
     networks:
       app_net:
-        ipv4_address: 172.20.0.2
+        ipv4_address: 172.21.0.2
     tty: true
     depends_on:
       - mariadb
+    working_dir: ${WORKING_DIR}
 
   # integration test用のseleniumコンテナ
   selenium:
@@ -84,7 +89,7 @@ services:
       - rails
     networks:
       app_net:
-        ipv4_address: 172.20.0.5
+        ipv4_address: 172.21.0.5
 
   # redis,要否判定の上適宜コメントアウト
   redis:
@@ -96,7 +101,7 @@ services:
       - ./redis_data:/data
     networks:
       app_net:
-        ipv4_address: 172.20.0.6
+        ipv4_address: 172.21.0.6
 
   # sidekiq,要否判定の上、適宜コメントアウト
   sidekiq:
@@ -111,7 +116,7 @@ services:
       - redis
     networks:
       app_net:
-        ipv4_address: 172.20.0.7
+        ipv4_address: 172.21.0.7
 
   # oracle開発用コンテナ。要否判定の上、適宜コメントアウト
   oracle-xe:
@@ -128,7 +133,7 @@ services:
       - ORACLE_ALLOW_REMOTE=true
     networks:
       app_net:
-        ipv4_address: 172.20.0.4
+        ipv4_address: 172.21.0.4
     volumes:
       - ./oracle_data:/u01/app/oracle
 
@@ -139,5 +144,4 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 172.20.0.0/24
-
+        - subnet: 172.21.0.0/24
