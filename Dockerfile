@@ -2,7 +2,7 @@ FROM centos:7
 
 # set ruby version to be installed
 ENV ruby_ver="2.7.2"
-ENV rails_ver="6.0.3"
+ENV rails_ver="6.0.3.6"
 
 RUN yum -y update
 RUN yum -y install epel-release

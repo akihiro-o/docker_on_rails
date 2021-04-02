@@ -51,7 +51,7 @@ services:
       - mariadb
   web: &base
     #image: akihiro0028/autonomation-rails:version-0.7.1
-    image: akihiro0028/autonomation-rails:version-0.8
+    image: akihiro0028/autonomation-rails:version-0.9
     container_name: rails 
     env_file: .env
     volumes:

@@ -4,3 +4,4 @@ oracle_data/
 redis_data/
 .env
 *.DS_Store
+.docker-sync/
