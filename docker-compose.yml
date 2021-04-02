@@ -19,12 +19,13 @@
 #   -> docker-sync.ymlがマウント設定を記載するファイルとなる。
 # - 2021.1.04 master側でのコンテナ設定変更内容を、developにrebaseして動作確認。
 #   -> network設定でエラーが出た為、network払い出しIP帯を172.21.0.0/24に変更。
+# - 2021.04.02 Railsライセンス系の問題で、ActiveStorageの依存するMimeType判定処理の更改に伴うFW更新。
 # 注意事項
 # - docker-syncを利用する構成を適用する場合、docker以外に母艦側アプリが必要となる。
 #   -> 文書が長くなるので詳細はReadme.mdを参照。
 # - railsのgemをvolume共有するためにbundle installコマンドは--pathオプションでvendor/bundle以下に保存要。
 #
-# Write a.otsuka lastupdate:2021.01.04
+# Write a.otsuka lastupdate:2021.04.02
 ###
 
 version: "3"
@@ -47,7 +48,7 @@ services:
 
   # Rails開発用の基底コンテナ->web開発用コンテナやsidekiqコンテナはこのbaseコンテナを継承。
   base: &base
-    image: akihiro0028/autonomation-rails:version-0.8
+    image: akihiro0028/autonomation-rails:version-0.9
     env_file: .env
     environment:
       - RBENV_ROOT=${RBENV_ROOT}

@@ -12,12 +12,12 @@ docker-composeでRails6プロジェクトを作ってみた ^ ^
 - 2020/10/12 Rubyバージョンを2.7.2に,rails versionを6.0.3に変更。gem tiny_tdsをネイティブインストール
 - 2021/01/04 master側でのコンテナ設定変更内容を、developにrebaseして動作確認。
   - network払い出しIP帯を172.21.0.0/24に変更。
-
+- 2021/04/02 Railsライセンス系の問題で、ActiveStorageの依存するMimeType判定処理の更改に伴うFW更新。
 
 ## MW構成
 
 - ruby 2.7.2
-- Rails 6.0.3
+- Rails 6.0.3.6
 - MariaDB-1:10.4(lastest)
 - nodejs v10.17.0
 - Oracle instantcliant 18.3
