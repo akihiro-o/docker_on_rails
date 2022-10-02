@@ -4,7 +4,7 @@
 # - echo "RBENV_ROOT=/usr/local/rbenv">>.env
 # - echo "MARIADB_PASS={{password_yourself}}">>.env
 # - echo "WORKING_DIR=/var/www/myrails/{your_project}">>.env
-#
+# - echo "SLACK_GENERAL_HOOK={your_slack_endpoint}>>.env
 # docker-composeコマンドは下記URLを参照のこと
 # https://qiita.com/wasanx25/items/d47caf37b79e855af95f#exec
 #
@@ -12,6 +12,7 @@
 # https://qiita.com/Satoshi_Numasawa/items/278a143aa41735e1b0da
 #
 # memo:
+# - WGの為にWebhookのサンプルとしてSlack通知機能のエンドポイントURLを環境変数に追加。
 # - ITの為にselemiumを追加したが現在動作未検証。
 # - 2020.5.17 ActiveJob+Sidekiqでbackground-prosessを実行する為にkeyvaluedb:radisを追加。
 # - 2020.5.19 sidekiqを別コンテナに切り出し、docker-sync利用で母艦ファイルの読み込み速度の向上を図る。
@@ -48,17 +49,19 @@ services:
 
   # Rails開発用の基底コンテナ->web開発用コンテナやsidekiqコンテナはこのbaseコンテナを継承。
   base: &base
-    image: akihiro0028/autonomation-rails:version-0.9
+    image: akihiro0028/autonomation-rails:version-0.9.1
     env_file: .env
     environment:
       - RBENV_ROOT=${RBENV_ROOT}
       - MARIADB_PASS=${MARIADB_PASS}
+      - MARIADB_HOST=${MARIADB_HOST}
       - NLS_LANG=japanese_japan.al32utf8
       - PATH=${RBENV_ROOT}/bin:${RBENV_ROOT}/shims/:${PATH}
       - SELENIUM_DRIVER_URL=http://172.20.0.5:4444/wd/hub
       - REDIS_URL=redis://172.21.0.6:6379
       - GMAIL_ACCOUNT=${GMAIL_ACCOUNT}
       - GMAIL_PASSWORD=${GMAIL_PASSWORD}
+      - SLACK_GENERAL_HOOK=${SLACK_GENERAL_HOOK}
 
   # web開発用のrailsコンテナ
   rails: &rails
@@ -78,19 +81,19 @@ services:
     working_dir: ${WORKING_DIR}
 
   # integration test用のseleniumコンテナ
-  selenium:
-    image: selenium/standalone-chrome-debug
-    container_name: selenium
-    logging:
-      driver: none
-    ports:
-      - "4444:4444"
-      - "5900:5900"
-    depends_on:
-      - rails
-    networks:
-      app_net:
-        ipv4_address: 172.21.0.5
+#  selenium:
+#    image: selenium/standalone-chrome-debug
+#    container_name: selenium
+#    logging:
+#      driver: none
+#    ports:
+#      - "4444:4444"
+#      - "5900:5900"
+#    depends_on:
+#      - rails
+#    networks:
+#      app_net:
+#        ipv4_address: 172.21.0.5
 
   # redis,要否判定の上適宜コメントアウト
   redis:
